@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Тамара | сад и огород</title>
+<style>
+/* Встроенный браузер TikTok на Android — Chrome 78: без gap во flex, без inset, без ?. в JS */
+:root{--bg:#f4f1e8;--ink:#1d2a1f;--soft:#5b6b5d;--green:#2f6b3a;--card:#fff;--hl:#ff2d55;--tg:#2aabee}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,Roboto,"Segoe UI",Arial,sans-serif}
+body{padding:0 16px 32px}
+.hide{display:none}
+#arrow{position:fixed;top:4px;right:6px;width:112px;height:112px;z-index:5;pointer-events:none;
+  animation:poke 1s ease-in-out infinite}
+@keyframes poke{0%,100%{transform:translate(0,0)}50%{transform:translate(7px,-9px)}}
+#arrowtxt{position:fixed;top:112px;right:12px;z-index:5;background:var(--hl);color:#fff;font-weight:800;
+  font-size:21px;padding:8px 12px;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,.2)}
+h1{font-size:28px;line-height:1.15;margin:0;padding:178px 0 14px}
+.step{background:var(--card);border-radius:18px;padding:14px 14px 16px;margin:0 0 12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.num{display:inline-block;width:38px;height:38px;line-height:38px;border-radius:50%;background:var(--hl);color:#fff;
+  text-align:center;font-weight:800;font-size:22px;margin-right:10px;vertical-align:middle}
+.st{font-size:23px;font-weight:700;vertical-align:middle}
+.dots{display:inline-block;font-size:30px;line-height:20px;letter-spacing:1px;font-weight:900;
+  border:3px solid var(--hl);border-radius:10px;padding:0 6px 8px;vertical-align:middle}
+.sheet{margin-top:12px;border:1px solid #e3e3e3;border-radius:16px;overflow:hidden}
+.row{display:block;padding:13px 14px;font-size:20px;color:#222;border-top:1px solid #eee}
+.row:first-child{border-top:0}
+.row svg{width:24px;height:24px;vertical-align:-5px;margin-right:12px}
+.row.on{background:#fff0f3;font-weight:800;color:#000;box-shadow:inset 0 0 0 3px var(--hl)}
+.done{font-size:20px;line-height:1.35;margin:4px 2px 16px}
+.gift{background:var(--green);color:#fff;border-radius:18px;padding:16px;font-size:19px;line-height:1.35}
+.gift b{font-size:21px}
+.alt{margin-top:22px;font-size:17px;color:var(--soft);line-height:1.4}
+.btn{display:block;width:100%;margin-top:10px;padding:15px;border:0;border-radius:14px;font-size:19px;font-weight:700;
+  text-align:center;text-decoration:none;background:#e6e1d3;color:var(--ink)}
+.btn.tg{background:var(--tg);color:#fff;font-size:22px;padding:18px}
+#out{padding-top:40px;text-align:center}
+#out h1{padding:20px 0 10px}
+#out p{font-size:19px;color:var(--soft)}
+</style>
+</head>
+<body>
+
+<div id="in" class="hide">
+  <svg id="arrow" viewBox="0 0 100 100" aria-hidden="true">
+    <path d="M20 88 C 30 60, 50 40, 80 18" fill="none" stroke="#ff2d55" stroke-width="11" stroke-linecap="round"/>
+    <path d="M56 12 L 86 12 L 84 42" fill="none" stroke="#ff2d55" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <div id="arrowtxt">Нажмите ⋯</div>
+
+  <h1>Телеграм Тамары откроется в&nbsp;2&nbsp;нажатия</h1>
+
+  <div class="step">
+    <span class="num">1</span><span class="st">Нажмите <span class="dots">⋯</span> вверху справа</span>
+  </div>
+
+  <div class="step">
+    <span class="num">2</span><span class="st">Выберите «<span id="openlbl">Открыть в браузере</span>»</span>
+    <div class="sheet">
+      <span class="row"><svg viewBox="0 0 24 24"><path d="M5 21V4h11l-1 4h5l-2 7H7" fill="none" stroke="#333" stroke-width="2"/></svg>Жалоба</span>
+      <span class="row on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="none" stroke="#000" stroke-width="2"/><path d="M15.5 8.5l-2 5-5 2 2-5z" fill="#000"/></svg><span id="openlbl2">Открыть в браузере</span></span>
+      <span class="row"><svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.6 0l3-3a4 4 0 0 0-5.6-5.6l-1 1M14 10a4 4 0 0 0-5.6 0l-3 3a4 4 0 0 0 5.6 5.6l1-1" fill="none" stroke="#333" stroke-width="2"/></svg>Ссылка</span>
+    </div>
+  </div>
+
+  <p class="done">Telegram откроется сам, на канале нажмите «<b>Присоединиться</b>».</p>
+
+  <div class="gift">🎁 <b>Шпаргалки Тамары бесплатно</b><br>Уже в канале: «10 дел в саду до морозов». Сохраните и не потеряете.</div>
+
+  <div class="alt">Нет кнопки ⋯? Скопируйте адрес, откройте браузер и вставьте его в строку адреса.
+    <button class="btn" id="copy">Скопировать адрес канала</button>
+  </div>
+</div>
+
+<div id="out" class="hide">
+  <h1>Открываем Telegram…</h1>
+  <p>Если не открылся сам, нажмите:</p>
+  <a class="btn tg" id="go" href="#">Открыть канал Тамары</a>
+</div>
+
+<script>
+var TARGET = 'https://t.me/+pmXbWLQSNFM3YTA6'; // приглашение «TikTok профиль»: вступления по нему считает tools/tg_joins.py на хабе
+var ua = navigator.userAgent || '';
+var tiktok = /musical_ly|BytedanceWebview|TikTok|trill|ByteLocale/i.test(ua);
+var inapp = tiktok || /Instagram|FBAN|FBAV|FB_IAB|Line\/|VKAndroidApp|vkclient|OKApp|Snapchat|Pinterest/i.test(ua);
+var ios = /iPhone|iPad|iPod/i.test(ua);
+document.getElementById('go').href = TARGET;
+if (inapp) {
+  document.getElementById('in').className = '';
+  if (ios && !tiktok) {
+    document.getElementById('openlbl').textContent = 'Открыть в Safari';
+  }
+  document.getElementById('copy').onclick = function () {
+    var b = this, t = document.createElement('textarea');
+    t.value = TARGET; t.setAttribute('readonly', ''); t.style.position = 'absolute'; t.style.left = '-9999px';
+    document.body.appendChild(t); t.select(); t.setSelectionRange(0, 99);
+    var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(t);
+    b.textContent = ok ? 'Скопировано: ' + TARGET.replace('https://', '') : TARGET.replace('https://', '');
+  };
+} else {
+  document.getElementById('out').className = '';
+  location.replace(TARGET);
+}
+</script>
+</body>
+</html>

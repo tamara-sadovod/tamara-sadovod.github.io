@@ -86,7 +86,23 @@ var ua = navigator.userAgent || '';
 var tiktok = /musical_ly|BytedanceWebview|TikTok|trill|ByteLocale/i.test(ua);
 var inapp = tiktok || /Instagram|FBAN|FBAV|FB_IAB|Line\/|VKAndroidApp|vkclient|OKApp|Snapchat|Pinterest/i.test(ua);
 var ios = /iPhone|iPad|iPod/i.test(ua);
+var android = /Android/i.test(ua);
+var bot = /bot|crawl|spider|headless|preview|facebookexternalhit|Bytespider/i.test(ua);
+// счётчик нажатий (abacus, без регистрации); итог печатает tools/tg_joins.py на хабе
+function hit(key) {
+  var url = 'https://abacus.jasoncameron.dev/hit/tamara-sadovod/' + key;
+  try { fetch(url, { keepalive: true }); } catch (e) { new Image().src = url; }
+}
 document.getElementById('go').href = TARGET;
+if (bot) {
+  hit('bot');
+} else if (tiktok && (android || ios)) {
+  hit(ios ? 'tiktok-iphone' : 'tiktok-android');
+} else if (!inapp && (android || ios)) {
+  hit(ios ? 'brauzer-iphone' : 'brauzer-android');
+} else {
+  hit('drugoe');
+}
 if (inapp) {
   document.getElementById('in').className = '';
   if (ios && !tiktok) {
@@ -99,10 +115,11 @@ if (inapp) {
     var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
     document.body.removeChild(t);
     b.textContent = ok ? 'Скопировано: ' + TARGET.replace('https://', '') : TARGET.replace('https://', '');
+    hit('kopirovat');
   };
 } else {
   document.getElementById('out').className = '';
-  location.replace(TARGET);
+  setTimeout(function () { location.replace(TARGET); }, 300);  // дать счётчику уйти
 }
 </script>
 </body>

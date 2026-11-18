@@ -44,7 +44,7 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
 .a{font-size:16px;line-height:1.4;color:#36412f;margin:0}
 .foot{font-size:13px;color:var(--soft);text-align:center;margin-top:28px;line-height:1.45}
 /* подсказка для встроенного браузера TikTok/Instagram */
-.hide{display:none}
+.hide{display:none!important}
 .toppill{text-align:right;padding-top:8px}
 .toppill span{display:inline-block;background:#1f1f1f;color:#fff;border-radius:14px;padding:6px 12px;font-size:15px;font-weight:700}
 .tt{background:#fff3c4;border:2px solid #e0b400;border-radius:16px;padding:12px 14px 12px 64px;margin:0 0 12px;
@@ -52,6 +52,15 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
 .tt .arr{position:absolute;left:10px;top:50%;margin-top:-24px;font-size:40px;line-height:48px;color:#b04a20}
 .dots{display:inline-block;background:#1f1f1f;color:#fff;border-radius:8px;padding:0 8px;font-weight:800;letter-spacing:1px}
 .alt{display:block;text-align:center;font-size:15px;color:var(--soft);margin:10px 0 0}
+/* промокод Lava */
+.promo{border:2px dashed var(--rust);background:#fff;border-radius:16px;padding:12px 14px;margin:0 0 12px;text-align:center}
+.promo .pt{font-size:18px;line-height:1.35}
+.promo .code{display:inline-block;font-family:Menlo,Consolas,monospace;font-size:22px;font-weight:800;letter-spacing:2px;color:var(--rust);background:var(--peach2);border-radius:8px;padding:2px 10px;margin:2px 0}
+.promo .old{text-decoration:line-through;color:var(--soft)}
+.prcopy{display:block;width:100%;margin:10px 0 6px;padding:11px;border:2px solid var(--rust);border-radius:12px;background:#fff;color:var(--rust);font-size:17px;font-weight:700}
+.promo .how{font-size:14px;color:var(--soft);line-height:1.35}
+.promo2{text-align:center;font-size:15px;margin:10px 0 0}
+.promo2 b{color:var(--rust);letter-spacing:1px}
 </style>
 </head>
 <body><div class="wrap">
@@ -65,6 +74,9 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
   <p class="sub">Свет, корм, вода и курятник — по шагам, с цифрами для вашего города и вашего числа кур</p>
   <img class="cover" src="oblozhka.jpg" alt="Обложка книжки">
   <div class="tt hide" id="tt"><span class="arr">↗</span><span id="tttext">Оплата откроется в браузере Chrome. Если не открылась: нажмите <span class="dots">⋯</span> вверху справа и выберите <b>«Открыть в браузере»</b>.</span></div>
+  <div class="promo" id="promo"><div class="pt">Промокод <span class="code">TAMARA</span><br>скидка 10%: <b>180 ₽</b> вместо <span class="old">200 ₽</span></div>
+    <button class="prcopy" id="prcopy" type="button">Скопировать промокод</button>
+    <div class="how">На странице оплаты нажмите «Промокод», вставьте TAMARA и нажмите ✓</div></div>
   <a class="buy" id="buy1" href="https://app.lava.top/products/842fa4a1-7059-49db-a565-b63f7d86ae1a">Купить книжку<span class="price"></span><small>PDF, 62 страницы, придёт сразу после оплаты</small></a>
   <p class="note">Оплата картой: 200 ₽ рублями и по СБП, из других стран — 2,22 € или 2,44 $. Не открывается оплата? Нажмите ⋯ вверху и выберите «Открыть в браузере».</p>
   <a class="alt hide" id="alt1" href="https://app.lava.top/products/842fa4a1-7059-49db-a565-b63f7d86ae1a">Chrome не открылся? Открыть оплату здесь</a>
@@ -98,7 +110,8 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
 </div>
 
 <div style="margin-top:24px"><a class="buy" id="buy2" href="https://app.lava.top/products/842fa4a1-7059-49db-a565-b63f7d86ae1a">Купить книжку<span class="price"></span><small>Файл откроется на телефоне сразу</small></a>
-<a class="alt hide" id="alt2" href="https://app.lava.top/products/842fa4a1-7059-49db-a565-b63f7d86ae1a">Chrome не открылся? Открыть оплату здесь</a></div>
+<a class="alt hide" id="alt2" href="https://app.lava.top/products/842fa4a1-7059-49db-a565-b63f7d86ae1a">Chrome не открылся? Открыть оплату здесь</a>
+<p class="promo2">Промокод <b>TAMARA</b> — скидка 10% при оплате</p></div>
 
 <h2>Вопросы</h2>
 <div class="card"><p class="q">Как я получу книжку?</p><p class="a">Сразу после оплаты платёжная страница даст ссылку на файл, и копия придёт на почту, которую вы укажете. Файл PDF открывается на любом телефоне и компьютере.</p></div>
@@ -172,6 +185,18 @@ function bind(id, altId) {
   alt.onclick = function () { hit('kniga-buy-here' + src); };
 }
 bind('buy1', 'alt1'); bind('buy2', 'alt2');
+// промокод: копирование работает и в старом встроенном браузере TikTok (execCommand)
+var PROMO = 'TAMARA';
+$('prcopy').onclick = function () {
+  var btn = this, t = document.createElement('textarea');
+  t.value = PROMO; t.setAttribute('readonly', ''); t.style.position = 'absolute'; t.style.left = '-9999px';
+  document.body.appendChild(t); t.select(); t.setSelectionRange(0, 99);
+  var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(t);
+  if (!ok && navigator.clipboard) { try { navigator.clipboard.writeText(PROMO); ok = true; } catch (e) {} }
+  btn.textContent = ok ? 'Скопировано: TAMARA ✓' : 'Промокод: TAMARA';
+  hit('kniga-promo-copy' + src);
+};
 </script>
 </body>
 </html>

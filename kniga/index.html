@@ -43,9 +43,19 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
 .q{font-weight:700;font-size:17px;margin:0 0 4px}
 .a{font-size:16px;line-height:1.4;color:#36412f;margin:0}
 .foot{font-size:13px;color:var(--soft);text-align:center;margin-top:28px;line-height:1.45}
+/* подсказка для встроенного браузера TikTok/Instagram */
+.hide{display:none}
+.toppill{text-align:right;padding-top:8px}
+.toppill span{display:inline-block;background:#1f1f1f;color:#fff;border-radius:14px;padding:6px 12px;font-size:15px;font-weight:700}
+.tt{background:#fff3c4;border:2px solid #e0b400;border-radius:16px;padding:12px 14px 12px 64px;margin:0 0 12px;
+  font-size:17px;line-height:1.35;text-align:left;position:relative}
+.tt .arr{position:absolute;left:10px;top:50%;margin-top:-24px;font-size:40px;line-height:48px;color:#b04a20}
+.dots{display:inline-block;background:#1f1f1f;color:#fff;border-radius:8px;padding:0 8px;font-weight:800;letter-spacing:1px}
+.alt{display:block;text-align:center;font-size:15px;color:var(--soft);margin:10px 0 0}
 </style>
 </head>
 <body><div class="wrap">
+<div class="toppill hide" id="pill"><span>⋯ → Открыть в браузере ↑</span></div>
 
 <div class="hero">
   <img class="ava" src="tamara.jpg" alt="Тамара">
@@ -54,8 +64,10 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
   <div class="tag">чтобы неслись до весны</div>
   <p class="sub">Свет, корм, вода и курятник — по шагам, с цифрами для вашего города и вашего числа кур</p>
   <img class="cover" src="oblozhka.jpg" alt="Обложка книжки">
+  <div class="tt hide" id="tt"><span class="arr">↗</span><span id="tttext">Оплата откроется в браузере Chrome. Если не открылась: нажмите <span class="dots">⋯</span> вверху справа и выберите <b>«Открыть в браузере»</b>.</span></div>
   <a class="buy" id="buy1" href="https://app.lava.top/products/842fa4a1-7059-49db-a565-b63f7d86ae1a">Купить книжку<span class="price"></span><small>PDF, 62 страницы, придёт сразу после оплаты</small></a>
   <p class="note">Оплата картой: 200 ₽ рублями и по СБП, из других стран — 2,22 € или 2,44 $. Не открывается оплата? Нажмите ⋯ вверху и выберите «Открыть в браузере».</p>
+  <a class="alt hide" id="alt1" href="https://app.lava.top/products/842fa4a1-7059-49db-a565-b63f7d86ae1a">Chrome не открылся? Открыть оплату здесь</a>
 </div>
 
 <h2>Если куры зимой не несутся</h2>
@@ -85,7 +97,8 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
   <span class="chip">5 кур или 50</span><span class="chip">кроссы и породы</span><span class="chip">Россия</span><span class="chip">Беларусь</span><span class="chip">Украина</span><span class="chip">Казахстан</span><span class="chip">Узбекистан</span><span class="chip">Кыргызстан</span><span class="chip">Армения</span><span class="chip">читать с телефона</span>
 </div>
 
-<div style="margin-top:24px"><a class="buy" id="buy2" href="https://app.lava.top/products/842fa4a1-7059-49db-a565-b63f7d86ae1a">Купить книжку<span class="price"></span><small>Файл откроется на телефоне сразу</small></a></div>
+<div style="margin-top:24px"><a class="buy" id="buy2" href="https://app.lava.top/products/842fa4a1-7059-49db-a565-b63f7d86ae1a">Купить книжку<span class="price"></span><small>Файл откроется на телефоне сразу</small></a>
+<a class="alt hide" id="alt2" href="https://app.lava.top/products/842fa4a1-7059-49db-a565-b63f7d86ae1a">Chrome не открылся? Открыть оплату здесь</a></div>
 
 <h2>Вопросы</h2>
 <div class="card"><p class="q">Как я получу книжку?</p><p class="a">Сразу после оплаты платёжная страница даст ссылку на файл, и копия придёт на почту, которую вы укажете. Файл PDF открывается на любом телефоне и компьютере.</p></div>
@@ -102,25 +115,63 @@ var PRICE = '200 ₽';
 var ua = navigator.userAgent || '';
 var tiktok = /musical_ly|BytedanceWebview|TikTok|trill|ByteLocale/i.test(ua);
 var insta = /Instagram/i.test(ua);
+var android = /Android/i.test(ua);
 var bot = /bot|crawl|spider|headless|preview|facebookexternalhit|Bytespider/i.test(ua);
 var src = tiktok ? '-tiktok' : (insta ? '-insta' : '');
-// счётчик (abacus, без регистрации): просмотры страницы и нажатия «Купить», по площадкам
+function $(id) { return document.getElementById(id); }
+function show(id) { var e = $(id); if (e) { e.className = e.className.replace(/\s*hide\b/, ''); } }
+// Счётчики без регистрации, два сразу (abacus с 18.11 не отвечает):
+//   hits.sh — читать https://hits.sh/api/urns/tamara-sadovod.github.io/<ключ> (total + по дням)
+//   countapi.mileshilliard.com — читать https://countapi.mileshilliard.com/api/v1/get/tamara-sadovod-<ключ>
+function ping(url, cors) {
+  try {
+    fetch(url, { keepalive: true, mode: cors ? 'cors' : 'no-cors', cache: 'no-store' })['catch'](function () {});
+  } catch (e) { new Image().src = url; }
+}
 function hit(key) {
-  var url = 'https://abacus.jasoncameron.dev/hit/tamara-sadovod/' + key;
-  try { fetch(url, { keepalive: true }); } catch (e) { new Image().src = url; }
+  ping('https://hits.sh/tamara-sadovod.github.io/' + key + '.svg', false);
+  ping('https://countapi.mileshilliard.com/api/v1/hit/tamara-sadovod-' + key, true);
 }
 if (!bot) { hit('kniga-view' + src); }
 var spans = document.getElementsByClassName('price');
 for (var i = 0; i < spans.length; i++) { spans[i].textContent = PRICE ? ' · ' + PRICE : ''; }
-function bind(id) {
-  var a = document.getElementById(id);
-  if (BUY_URL) { a.href = BUY_URL; }
+
+// TikTok на Android: во встроенном браузере Lava после первого открытия пишет «нет соединения».
+// Поэтому кнопка сразу открывает оплату в Chrome через intent://, ссылка «здесь» остаётся запасной.
+var CHROME_URL = '';
+if (tiktok && android && BUY_URL) {
+  var u = BUY_URL + (BUY_URL.indexOf('?') < 0 ? '?' : '&') + 'utm_source=tiktok_kniga';
+  CHROME_URL = 'intent://' + u.replace(/^https?:\/\//, '') +
+    '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + encodeURIComponent(u) + ';end';
+}
+if (tiktok || insta) {
+  show('pill'); show('tt');
+  if (!CHROME_URL) {
+    $('tttext').innerHTML = 'Если оплата не откроется: нажмите <span class="dots">⋯</span> вверху справа и выберите <b>«Открыть в браузере»</b>.';
+  }
+}
+var tried = 0;
+document.addEventListener('visibilitychange', function () {
+  // ушли из TikTok в Chrome в течение 20 с после нажатия — intent сработал
+  if (document.hidden && tried && (new Date().getTime() - tried) < 20000) { hit('kniga-chrome-ok'); tried = 0; }
+});
+function bind(id, altId) {
+  var a = $(id);
+  if (BUY_URL) { a.href = CHROME_URL || BUY_URL; }
   a.onclick = function () {
     hit('kniga-buy' + src);
     if (!BUY_URL) { alert('Книжка появится в продаже совсем скоро. Напишите Тамаре в личку слово КНИЖКА — пришлём ссылку.'); return false; }
+    if (CHROME_URL) {
+      hit('kniga-chrome');
+      tried = new Date().getTime();
+      setTimeout(function () { if (!document.hidden) { show(altId); } }, 2500);
+    }
   };
+  var alt = $(altId);
+  alt.href = BUY_URL;
+  alt.onclick = function () { hit('kniga-buy-here' + src); };
 }
-bind('buy1'); bind('buy2');
+bind('buy1', 'alt1'); bind('buy2', 'alt2');
 </script>
 </body>
 </html>

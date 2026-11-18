@@ -66,6 +66,15 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
 .st small{font-size:15px;color:var(--soft)}
 .menu{display:inline-block;background:#fff;border:2px solid #1f1f1f;border-radius:10px;padding:2px 10px;font-weight:800;margin-top:4px}
 .ovsmall{font-size:14px;color:var(--soft);text-align:center}
+/* оплата не из России: рублём и СБП платят только карты РФ */
+.intl{background:#eef4fb;border:2px solid #9bb8d9;border-radius:16px;padding:12px 14px;margin:14px 0 0;text-align:center}
+.intl.hot{background:#fff3c4;border-color:#e0b400}
+.intl .ih{font-size:20px;font-weight:800;margin:0 0 4px}
+.intl .it{font-size:17px;line-height:1.35;margin:0 0 10px}
+.ibtn{display:inline-block;width:47%;margin:0 1%;padding:13px 4px;border-radius:12px;background:#1f4e8c;color:#fff;font-size:19px;font-weight:800;text-decoration:none}
+.ibtn small{display:block;font-size:13px;font-weight:600;opacity:.9;margin-top:2px}
+.intl .is{font-size:15px;color:var(--soft);margin:9px 0 0;line-height:1.35}
+.rub{display:block;margin:10px 0 0;font-size:15px;color:var(--green);font-weight:700}
 /* промокод Lava */
 .promo{border:2px dashed var(--rust);background:#fff;border-radius:16px;padding:12px 14px;margin:0 0 12px;text-align:center}
 .promo .pt{font-size:18px;line-height:1.35}
@@ -92,7 +101,14 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
     <button class="prcopy" id="prcopy" type="button">Скопировать промокод</button>
     <div class="how">На странице оплаты нажмите «Промокод», вставьте TAMARA и нажмите ✓</div></div>
   <a class="buy" id="buy1" href="https://app.lava.top/products/842fa4a1-7059-49db-a565-b63f7d86ae1a">Купить книжку<span class="price"></span><small>PDF, 62 страницы, придёт сразу после оплаты</small></a>
-  <p class="note">Оплата картой: 200 ₽ рублями и по СБП, из других стран — 2,22 € или 2,44 $. Не открывается оплата? Нажмите ⋯ вверху и выберите «Открыть в браузере».</p>
+  <p class="note" id="note1">Оплата картой российского банка или по СБП. Не открывается оплата? Нажмите ⋯ вверху и выберите «Открыть в браузере».</p>
+  <div class="intl" id="intl">
+    <div class="ih">🌍 Вы не из России?</div>
+    <div class="it" id="intlt">Карты Казахстана, Беларуси, Узбекистана и других стран рублями не платят. Платите в долларах или евро картой Visa или Mastercard:</div>
+    <a class="ibtn" id="usd" href="#">2,44 $<small>оплатить в долларах</small></a><a class="ibtn" id="eur" href="#">2,22 €<small>оплатить в евро</small></a>
+    <div class="is">На странице оплаты выберите «Оплата картой» (не PayPal), введите email и данные карты.</div>
+    <a class="rub hide" id="rub" href="#">Карта российского банка? Оплатить в рублях · 200 ₽</a>
+  </div>
 </div>
 
 <h2>Если куры зимой не несутся</h2>
@@ -123,7 +139,7 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
 </div>
 
 <div style="margin-top:24px"><a class="buy" id="buy2" href="https://app.lava.top/products/842fa4a1-7059-49db-a565-b63f7d86ae1a">Купить книжку<span class="price"></span><small>Файл откроется на телефоне сразу</small></a>
-<p class="promo2">Промокод <b>TAMARA</b> — скидка 10% при оплате</p></div>
+<p class="promo2" id="promo2">Промокод <b>TAMARA</b> — скидка 10% при оплате</p></div>
 
 <h2>Вопросы</h2>
 <div class="card"><p class="q">Как я получу книжку?</p><p class="a">Сразу после оплаты платёжная страница даст ссылку на файл, и копия придёт на почту, которую вы укажете. Файл PDF открывается на любом телефоне и компьютере.</p></div>
@@ -143,7 +159,7 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
     <div class="st"><span class="n">2</span>Выберите<br><span class="menu">🌐 Открыть в браузере</span><br><small>если телефон спросит, чем открыть, выберите Chrome</small></div>
     <div class="st"><span class="n">3</span>В браузере нажмите «Купить книжку» ещё раз</div>
     <button class="prcopy" id="prcopy2" type="button">Скопировать промокод TAMARA</button>
-    <div class="ovsmall">Вставите его на странице оплаты: −10%, выйдет 180 ₽</div>
+    <div class="ovsmall" id="ovsmall">Вставите его на странице оплаты: −10%, выйдет 180 ₽</div>
   </div>
 </div>
 
@@ -182,14 +198,32 @@ if (!bot) {
   hit('kniga-view' + src);
   if (FROM) { hit(((tiktok || insta) ? 'kniga-view-from-' : 'kniga-viewbr-from-') + FROM); }
 }
+// Страна по часовому поясу телефона. Рублём и СБП платят только карты РФ (хаб 18.11: из назвавших город 3 из 5 Казахстан),
+// поэтому всем вне российских поясов кнопка сразу открывает оплату в долларах. Lava держит валюту в адресе: ?currency=USD.
+var TZ = '';
+try { TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+var RU_TZ = /^(Europe\/(Moscow|Kaliningrad|Samara|Volgograd|Saratov|Ulyanovsk|Astrakhan|Kirov|Simferopol)|Asia\/(Yekaterinburg|Omsk|Novosibirsk|Barnaul|Tomsk|Novokuznetsk|Krasnoyarsk|Irkutsk|Chita|Yakutsk|Khandyga|Vladivostok|Ust-Nera|Magadan|Sakhalin|Srednekolymsk|Kamchatka|Anadyr))$/;
+var nonRU = !!TZ && !RU_TZ.test(TZ);
+if (nonRU && !bot) { hit('kniga-view-nonru'); hit('kniga-tz-' + TZ.toLowerCase().replace(/[^a-z0-9]+/g, '-')); }
+// страница оплаты Lava сразу (без карточки товара): товар/предложение
+var CHECKOUT = 'https://app.lava.top/products/842fa4a1-7059-49db-a565-b63f7d86ae1a/5007ab91-5e72-4c78-b39a-160619cbf3a8';
+var MAIN = nonRU ? 'USD' : 'RUB';
+if (nonRU) { PRICE = '2,44 $'; }
 var spans = document.getElementsByClassName('price');
 for (var i = 0; i < spans.length; i++) { spans[i].textContent = PRICE ? ' · ' + PRICE : ''; }
+if (nonRU) {
+  $('intl').className = 'intl hot';
+  $('intlt').innerHTML = 'Для вашей страны цена в долларах: <b>2,44&nbsp;$</b> (или 2,22&nbsp;€). Платите картой Visa или Mastercard.';
+  $('note1').textContent = 'Оплата картой Visa или Mastercard. Не открывается оплата? Нажмите ⋯ вверху и выберите «Открыть в браузере».';
+  show('rub');
+  // промокод Lava считает только в рублях
+  $('promo').className += ' hide'; $('promo2').className += ' hide'; $('prcopy2').className += ' hide'; $('ovsmall').className += ' hide';
+}
 
 // TikTok: во встроенном браузере Lava после первого открытия пишет «нет соединения»,
 // а переход в Chrome через intent:// TikTok молча глушит (проверено на трубке 18.11).
 // Поэтому в TikTok кнопка «Купить» никуда не уводит, а показывает инструкцию «⋯ → Открыть в браузере».
-var PAY_URL = BUY_URL;
-if (BUY_URL && FROM) { PAY_URL = BUY_URL + (BUY_URL.indexOf('?') < 0 ? '?' : '&') + 'utm_source=kniga_' + FROM; }
+function payUrl(cur) { return CHECKOUT + '?currency=' + cur + (FROM ? '&utm_source=kniga_' + FROM : ''); }
 if (tiktok || insta) { show('pill'); show('tt'); }
 if (insta) {
   $('tttext').innerHTML = 'Если оплата не откроется: нажмите <span class="dots">⋯</span> вверху справа и выберите <b>«Открыть в браузере»</b>.';
@@ -203,17 +237,19 @@ document.addEventListener('visibilitychange', function () {
   // после инструкции ушли из TikTok (скорее всего, в браузер)
   if (document.hidden && ovShown) { hit('kniga-ov-left'); ovShown = false; }
 });
-function bind(id) {
+// key: главная кнопка → kniga-buy, кнопки валют в блоке «не из России» → kniga-cur-usd / -eur / -rub
+function bind(id, cur, key) {
   var a = $(id);
-  if (PAY_URL) { a.href = PAY_URL; }
+  if (BUY_URL) { a.href = payUrl(cur); }
   a.onclick = function () {
-    hit('kniga-buy' + src);
+    hit(key + src);
     if (!BUY_URL) { alert('Книжка появится в продаже совсем скоро. Напишите Тамаре в личку слово КНИЖКА — пришлём ссылку.'); return false; }
     if (tiktok) { openOv(); return false; }
     if (FROM) { hit('kniga-buy-from-' + FROM); }
   };
 }
-bind('buy1'); bind('buy2');
+bind('buy1', MAIN, 'kniga-buy'); bind('buy2', MAIN, 'kniga-buy');
+bind('usd', 'USD', 'kniga-cur-usd'); bind('eur', 'EUR', 'kniga-cur-eur'); bind('rub', 'RUB', 'kniga-cur-rub');
 // промокод: копирование работает и в старом встроенном браузере TikTok (execCommand)
 var PROMO = 'TAMARA';
 function copyPromo(btn) {

@@ -171,22 +171,25 @@ function hit(key) {
   ping('https://hits.sh/tamara-sadovod.github.io/' + key + '.svg', false);
   ping('https://countapi.mileshilliard.com/api/v1/hit/tamara-sadovod-' + key, true);
 }
-// Открыли в браузере из TikTok («⋯ → Открыть в браузере»): адрес несёт ?from=tiktok, ключи -ttchrome
-var fromTT = /[?&]from=tiktok\b/.test(location.search) && !tiktok;
-if (fromTT) { src = '-ttchrome'; }
-if (!bot) { hit('kniga-view' + src); }
+// Метка источника прямо в ссылке: /kniga/?from=tt (профиль TikTok), ttdm (личка TikTok), ig, igdm, yt...
+// TikTok при «Открыть в браузере» отдаёт браузеру исходную ссылку, поэтому метка доезжает до Chrome только так.
+//   kniga-view-from-<метка>   — заход во встроенном браузере TikTok/IG
+//   kniga-viewbr-from-<метка> — заход в настоящем браузере (дошли до места, где Lava работает)
+//   kniga-buy-from-<метка>    — «Купить» там, где кнопка ведёт на Lava; у Lava utm_source=kniga_<метка>
+var fm = /[?&]from=([a-z0-9_-]{1,20})/i.exec(location.search);
+var FROM = fm ? fm[1].toLowerCase() : '';
+if (!bot) {
+  hit('kniga-view' + src);
+  if (FROM) { hit(((tiktok || insta) ? 'kniga-view-from-' : 'kniga-viewbr-from-') + FROM); }
+}
 var spans = document.getElementsByClassName('price');
 for (var i = 0; i < spans.length; i++) { spans[i].textContent = PRICE ? ' · ' + PRICE : ''; }
 
 // TikTok: во встроенном браузере Lava после первого открытия пишет «нет соединения»,
 // а переход в Chrome через intent:// TikTok молча глушит (проверено на трубке 18.11).
 // Поэтому в TikTok кнопка «Купить» никуда не уводит, а показывает инструкцию «⋯ → Открыть в браузере».
-// В адрес добавляем ?from=tiktok: если «Открыть в браузере» берёт текущий адрес, в Chrome это видно (ключи -ttchrome).
-if (tiktok && !location.search && window.history && history.replaceState) {
-  try { history.replaceState(null, '', location.pathname + '?from=tiktok'); } catch (e) {}
-}
 var PAY_URL = BUY_URL;
-if (BUY_URL && fromTT) { PAY_URL = BUY_URL + (BUY_URL.indexOf('?') < 0 ? '?' : '&') + 'utm_source=tiktok_kniga'; }
+if (BUY_URL && FROM) { PAY_URL = BUY_URL + (BUY_URL.indexOf('?') < 0 ? '?' : '&') + 'utm_source=kniga_' + FROM; }
 if (tiktok || insta) { show('pill'); show('tt'); }
 if (insta) {
   $('tttext').innerHTML = 'Если оплата не откроется: нажмите <span class="dots">⋯</span> вверху справа и выберите <b>«Открыть в браузере»</b>.';
@@ -207,6 +210,7 @@ function bind(id) {
     hit('kniga-buy' + src);
     if (!BUY_URL) { alert('Книжка появится в продаже совсем скоро. Напишите Тамаре в личку слово КНИЖКА — пришлём ссылку.'); return false; }
     if (tiktok) { openOv(); return false; }
+    if (FROM) { hit('kniga-buy-from-' + FROM); }
   };
 }
 bind('buy1'); bind('buy2');

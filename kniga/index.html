@@ -66,6 +66,9 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
 .st small{font-size:15px;color:var(--soft)}
 .menu{display:inline-block;background:#fff;border:2px solid #1f1f1f;border-radius:10px;padding:2px 10px;font-weight:800;margin-top:4px}
 .ovsmall{font-size:14px;color:var(--soft);text-align:center}
+.ortg{border-top:1px solid #eee5d2;padding:12px 0 8px;font-size:17px;font-weight:700;text-align:center;color:var(--ink)}
+.tgbtn{display:block;margin:0 0 12px;padding:13px 10px;border-radius:14px;background:#2a9fd8;color:#fff;font-size:19px;font-weight:800;text-align:center;text-decoration:none}
+.tgbtn small{display:block;font-size:14px;font-weight:500;opacity:.95;margin-top:2px}
 /* оплата не из России: рублём и СБП платят только карты РФ */
 .intl{background:#eef4fb;border:2px solid #9bb8d9;border-radius:16px;padding:12px 14px;margin:14px 0 0;text-align:center}
 .intl.hot{background:#fff3c4;border-color:#e0b400}
@@ -158,6 +161,8 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
     <div class="st"><span class="n">1</span>Нажмите <span class="dots">⋯</span> вверху справа</div>
     <div class="st"><span class="n">2</span>Выберите<br><span class="menu">🌐 Открыть в браузере</span><br><small>если телефон спросит, чем открыть, выберите Chrome</small></div>
     <div class="st"><span class="n">3</span>В браузере нажмите «Купить книжку» ещё раз</div>
+    <div class="ortg">Не получается? Есть Telegram?</div>
+    <a class="tgbtn" id="tgbtn" href="https://t.me/tamara_sadovod_bot?start=kniga_web">✈️ Купить через Telegram<small>бот Тамары сразу пришлёт кнопку оплаты</small></a>
     <button class="prcopy" id="prcopy2" type="button">Скопировать промокод TAMARA</button>
     <div class="ovsmall" id="ovsmall">Вставите его на странице оплаты: −10%, выйдет 180 ₽</div>
   </div>
@@ -232,6 +237,10 @@ var ovShown = false;
 function openOv() { show('ov'); ovShown = true; hit('kniga-ov-tiktok'); }
 function closeOv() { $('ov').className = 'ov hide'; }
 $('ovx').onclick = closeOv;
+// Запасной путь из TikTok: бот Тамары по /start kniga_<метка> шлёт обложку и кнопки Lava (RUB и USD);
+// из Телеграма оплата открывается, первая продажа 18.11 прошла так.
+$('tgbtn').href = 'https://t.me/tamara_sadovod_bot?start=kniga_' + (FROM || 'web');
+$('tgbtn').onclick = function () { hit('kniga-tg' + src); };
 $('ov').onclick = function (e) { if (e.target === this) { closeOv(); } };
 document.addEventListener('visibilitychange', function () {
   // после инструкции ушли из TikTok (скорее всего, в браузер)

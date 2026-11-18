@@ -67,8 +67,9 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
 .menu{display:inline-block;background:#fff;border:2px solid #1f1f1f;border-radius:10px;padding:2px 10px;font-weight:800;margin-top:4px}
 .ovsmall{font-size:14px;color:var(--soft);text-align:center}
 .ortg{border-top:1px solid #eee5d2;padding:12px 0 8px;font-size:17px;font-weight:700;text-align:center;color:var(--ink)}
-.tgbtn{display:block;margin:0 0 12px;padding:13px 10px;border-radius:14px;background:#2a9fd8;color:#fff;font-size:19px;font-weight:800;text-align:center;text-decoration:none}
-.tgbtn small{display:block;font-size:14px;font-weight:500;opacity:.95;margin-top:2px}
+.tgs{font-size:17px;line-height:1.4;text-align:center;margin:0 0 8px}
+.tgs b{white-space:nowrap}
+.tgbtn{display:block;width:100%;margin:0 0 12px;padding:12px 8px;border:0;border-radius:14px;background:#2a9fd8;color:#fff;font-size:18px;font-weight:800;text-align:center}
 /* оплата не из России: рублём и СБП платят только карты РФ */
 .intl{background:#eef4fb;border:2px solid #9bb8d9;border-radius:16px;padding:12px 14px;margin:14px 0 0;text-align:center}
 .intl.hot{background:#fff3c4;border-color:#e0b400}
@@ -162,7 +163,8 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
     <div class="st"><span class="n">2</span>Выберите<br><span class="menu">🌐 Открыть в браузере</span><br><small>если телефон спросит, чем открыть, выберите Chrome</small></div>
     <div class="st"><span class="n">3</span>В браузере нажмите «Купить книжку» ещё раз</div>
     <div class="ortg">Не получается? Есть Telegram?</div>
-    <a class="tgbtn" id="tgbtn" href="https://t.me/tamara_sadovod_bot?start=kniga_web">✈️ Купить через Telegram<small>бот Тамары сразу пришлёт кнопку оплаты</small></a>
+    <div class="tgs">Откройте Telegram, в поиске наберите <b>tamara_sadovod_bot</b>, нажмите «Старт» и напишите боту: <b>книга</b>. Он пришлёт кнопку оплаты.</div>
+    <button class="tgbtn" id="tgbtn" type="button">✈️ Скопировать имя бота</button>
     <button class="prcopy" id="prcopy2" type="button">Скопировать промокод TAMARA</button>
     <div class="ovsmall" id="ovsmall">Вставите его на странице оплаты: −10%, выйдет 180 ₽</div>
   </div>
@@ -237,10 +239,8 @@ var ovShown = false;
 function openOv() { show('ov'); ovShown = true; hit('kniga-ov-tiktok'); }
 function closeOv() { $('ov').className = 'ov hide'; }
 $('ovx').onclick = closeOv;
-// Запасной путь из TikTok: бот Тамары по /start kniga_<метка> шлёт обложку и кнопки Lava (RUB и USD);
-// из Телеграма оплата открывается, первая продажа 18.11 прошла так.
-$('tgbtn').href = 'https://t.me/tamara_sadovod_bot?start=kniga_' + (FROM || 'web');
-$('tgbtn').onclick = function () { hit('kniga-tg' + src); };
+// Запасной путь из TikTok: бот Тамары шлёт обложку и кнопки Lava (RUB и USD), из Телеграма оплата открывается
+// (первая продажа 18.11 прошла так). Ссылку t.me TikTok глушит (START BOT мёртвый), поэтому только имя для поиска.
 $('ov').onclick = function (e) { if (e.target === this) { closeOv(); } };
 document.addEventListener('visibilitychange', function () {
   // после инструкции ушли из TikTok (скорее всего, в браузер)
@@ -260,19 +260,26 @@ function bind(id, cur, key) {
 bind('buy1', MAIN, 'kniga-buy'); bind('buy2', MAIN, 'kniga-buy');
 bind('usd', 'USD', 'kniga-cur-usd'); bind('eur', 'EUR', 'kniga-cur-eur'); bind('rub', 'RUB', 'kniga-cur-rub');
 // промокод: копирование работает и в старом встроенном браузере TikTok (execCommand)
-var PROMO = 'TAMARA';
-function copyPromo(btn) {
+function copyText(txt) {
   var t = document.createElement('textarea');
-  t.value = PROMO; t.setAttribute('readonly', ''); t.style.position = 'absolute'; t.style.left = '-9999px';
+  t.value = txt; t.setAttribute('readonly', ''); t.style.position = 'absolute'; t.style.left = '-9999px';
   document.body.appendChild(t); t.select(); t.setSelectionRange(0, 99);
   var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
   document.body.removeChild(t);
-  if (!ok && navigator.clipboard) { try { navigator.clipboard.writeText(PROMO); ok = true; } catch (e) {} }
-  btn.textContent = ok ? 'Скопировано: TAMARA ✓' : 'Промокод: TAMARA';
+  if (!ok && navigator.clipboard) { try { navigator.clipboard.writeText(txt); ok = true; } catch (e) {} }
+  return ok;
+}
+var PROMO = 'TAMARA';
+function copyPromo(btn) {
+  btn.textContent = copyText(PROMO) ? 'Скопировано: TAMARA ✓' : 'Промокод: TAMARA';
   hit('kniga-promo-copy' + src);
 }
 $('prcopy').onclick = function () { copyPromo(this); };
 $('prcopy2').onclick = function () { copyPromo(this); };
+$('tgbtn').onclick = function () {
+  this.textContent = copyText('tamara_sadovod_bot') ? 'Скопировано ✓ вставьте в поиск Telegram' : 'tamara_sadovod_bot';
+  hit('kniga-tg' + src);
+};
 </script>
 </body>
 </html>

@@ -88,12 +88,40 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
 .promo .how{font-size:14px;color:var(--soft);line-height:1.35}
 .promo2{text-align:center;font-size:15px;margin:10px 0 0}
 .promo2 b{color:var(--rust);letter-spacing:1px}
+/* Касса прямо на странице (20.11): «Купить» → счёт Lava через abuzai.codes/tk/ → форма карты здесь же → книжка */
+.co{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(20,20,16,.72);z-index:60;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.cocard{position:relative;max-width:520px;min-height:100%;margin:0 auto;background:var(--bg);padding:14px 16px 40px}
+@media (min-width:560px){.cocard{min-height:0;margin:30px auto;border-radius:20px}}
+.cox{position:absolute;top:6px;right:8px;border:0;background:transparent;font-size:34px;line-height:34px;color:var(--soft);padding:4px 10px}
+.coh{font-family:Georgia,"Times New Roman",serif;font-size:24px;color:var(--green);margin:6px 44px 4px 0;font-weight:700}
+.cosub{color:var(--soft);font-size:16px;margin:0 0 16px}
+.cobtn{display:block;width:100%;margin:0 0 12px;padding:18px 16px;border:0;border-radius:14px;font-size:20px;font-weight:700;text-align:left;font-family:inherit}
+.cobtn small{display:block;font-weight:400;font-size:15px;margin-top:4px}
+.cobtn.r{background:var(--green);color:#fff}
+.cobtn.u{background:#fff;color:var(--ink);border:2px solid var(--green)}
+.cohint{color:var(--soft);font-size:15px;line-height:1.4;margin:10px 0 0}
+.cobox{background:#fff;border-radius:14px;padding:14px;margin-top:6px}
+.coback{border:0;background:none;color:var(--green);font-size:17px;padding:6px 0 10px;font-family:inherit}
+#cardpay{width:100%;height:760px;border:0;background:#fff;border-radius:12px}
+.coload{text-align:center;padding:50px 0;font-size:19px;color:var(--soft)}
+.spin{display:inline-block;width:34px;height:34px;border:4px solid var(--line);border-top-color:var(--green);border-radius:50%;animation:sp 1s linear infinite;margin-bottom:12px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.cook{background:#e8f5e9;border-radius:16px;padding:18px 16px;font-size:20px;line-height:1.4}
+.cook .readbtn{display:block;text-align:center;margin:16px 0 10px;padding:18px 12px;border-radius:16px;background:var(--rust);color:#fff;font-size:22px;font-weight:800;text-decoration:none}
+.cook small{display:block;font-size:15px;color:var(--soft);line-height:1.4}
+.cook .cplink{display:block;width:100%;margin:12px 0 0;padding:12px;border:2px solid var(--green);border-radius:12px;background:#fff;color:var(--green);font-size:17px;font-weight:700;font-family:inherit}
+.coerr{background:#fdecea;border-radius:14px;padding:16px;font-size:18px;line-height:1.4}
+.coalt{display:block;text-align:center;margin:18px 0 0;font-size:15px;color:var(--soft)}
+.coalt a{color:var(--green)}
+.mybook{display:block;background:var(--green);color:#fff;text-decoration:none;border-radius:16px;padding:14px 16px;margin:0 0 14px;font-size:19px;font-weight:700;text-align:center}
+.mybook small{display:block;font-weight:400;font-size:14px;opacity:.9}
 </style>
 </head>
 <body><div class="wrap">
 <div class="toppill hide" id="pill"><span>⋯ → Открыть в браузере ↑</span></div>
 
 <div class="hero">
+  <a class="mybook hide" id="mybook" href="#">📖 Ваша книжка — читать<small>вы её уже купили на этом телефоне</small></a>
   <img class="ava" src="tamara.jpg" alt="Тамара">
   <div class="by">Книжка от Тамары · сад и огород</div>
   <h1>Несушки зимой</h1>
@@ -104,13 +132,13 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
   <div class="promo" id="promo"><div class="pt">Промокод <span class="code">TAMARA</span><br>скидка 10%: <b>180 ₽</b> вместо <span class="old">200 ₽</span></div>
     <button class="prcopy" id="prcopy" type="button">Скопировать промокод</button>
     <div class="how">На странице оплаты нажмите «Промокод», вставьте TAMARA и нажмите ✓</div></div>
-  <a class="buy" id="buy1" href="https://app.lava.top/products/842fa4a1-7059-49db-a565-b63f7d86ae1a">Купить книжку<span class="price"></span><small>PDF, 62 страницы, придёт сразу после оплаты</small></a>
-  <p class="note" id="note1">Оплата картой российского банка или по СБП. Не открывается оплата? Нажмите ⋯ вверху и выберите «Открыть в браузере».</p>
+  <a class="buy" id="buy1" href="https://app.lava.top/products/842fa4a1-7059-49db-a565-b63f7d86ae1a">Купить книжку<span class="price"></span><small>62 страницы, откроется сразу после оплаты</small></a>
+  <p class="note" id="note1">Оплата картой прямо на этой странице, никуда переходить не нужно.</p>
   <div class="intl" id="intl">
     <div class="ih">🌍 Вы не из России?</div>
     <div class="it" id="intlt">Карты Казахстана, Беларуси, Узбекистана и других стран рублями не платят. Платите в долларах или евро картой Visa или Mastercard:</div>
     <a class="ibtn" id="usd" href="#">2,44 $<small>оплатить в долларах</small></a><a class="ibtn" id="eur" href="#">2,22 €<small>оплатить в евро</small></a>
-    <div class="is">На странице оплаты выберите «Оплата картой» (не PayPal), введите email и данные карты.</div>
+    <div class="is">Оплата картой прямо на этой странице.</div>
     <a class="rub hide" id="rub" href="#">Карта российского банка? Оплатить в рублях · 200 ₽</a>
   </div>
 </div>
@@ -142,14 +170,14 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
   <span class="chip">5 кур или 50</span><span class="chip">кроссы и породы</span><span class="chip">Россия</span><span class="chip">Беларусь</span><span class="chip">Украина</span><span class="chip">Казахстан</span><span class="chip">Узбекистан</span><span class="chip">Кыргызстан</span><span class="chip">Армения</span><span class="chip">читать с телефона</span>
 </div>
 
-<div style="margin-top:24px"><a class="buy" id="buy2" href="https://app.lava.top/products/842fa4a1-7059-49db-a565-b63f7d86ae1a">Купить книжку<span class="price"></span><small>Файл откроется на телефоне сразу</small></a>
+<div style="margin-top:24px"><a class="buy" id="buy2" href="https://app.lava.top/products/842fa4a1-7059-49db-a565-b63f7d86ae1a">Купить книжку<span class="price"></span><small>Откроется на телефоне сразу после оплаты</small></a>
 <p class="promo2" id="promo2">Промокод <b>TAMARA</b> — скидка 10% при оплате</p></div>
 
 <h2>Вопросы</h2>
-<div class="card"><p class="q">Как я получу книжку?</p><p class="a">Сразу после оплаты платёжная страница даст ссылку на файл, и копия придёт на почту, которую вы укажете. Файл PDF открывается на любом телефоне и компьютере.</p></div>
-<div class="card"><p class="q">Чем можно оплатить?</p><p class="a">Картой российского банка или по СБП в рублях. Из других стран — банковской картой в евро или долларах. Оплата проходит на защищённой странице платёжного сервиса.</p></div>
+<div class="card"><p class="q">Как я получу книжку?</p><p class="a">Сразу после оплаты на этой странице появится кнопка «Читать книжку». Книжка откроется прямо в телефоне, даже внутри TikTok и Instagram. Кнопка останется здесь: зайдёте на страницу снова — книжка будет на месте. В Хроме её можно скачать файлом PDF.</p></div>
+<div class="card"><p class="q">Чем можно оплатить?</p><p class="a">Картой российского банка в рублях. Картой любой другой страны (Казахстан, Беларусь, Узбекистан и другие) — в долларах. Оплата идёт через платёжный сервис Lava, данные карты вводятся в его защищённой форме.</p></div>
 <div class="card"><p class="q">Откуда цифры?</p><p class="a">Из справочников по птицеводству, университетских служб для фермеров и ветеринарных руководств. Основные цифры сверены минимум по двум источникам, список — в конце книжки.</p></div>
-<div class="card"><p class="q">Файл не открылся, что делать?</p><p class="a">Напишите Тамаре в личку в TikTok или Instagram слово КНИЖКА, пришлём заново.</p></div>
+<div class="card"><p class="q">Не получается оплатить или открыть?</p><p class="a">Напишите Тамаре в личку в TikTok или Instagram слово КНИЖКА, поможем.</p></div>
 
 <p class="foot">Тамара — персонаж канала «Тамара | сад и огород». Тексты подготовлены с помощью ИИ и сверены с открытыми источниками. Книжка не заменяет ветеринара.</p>
 </div>
@@ -169,6 +197,47 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
     <div class="ovsmall" id="ovsmall">Вставите его на странице оплаты: −10%, выйдет 180 ₽</div>
   </div>
 </div>
+
+<div class="co hide" id="co"><div class="cocard">
+  <button class="cox" id="cox" type="button" aria-label="Закрыть">×</button>
+  <div class="coh">📕 Несушки зимой</div>
+  <p class="cosub">62 страницы · откроется сразу после оплаты</p>
+
+  <div id="co-choose">
+    <button class="cobtn r" id="co-rub-btn" type="button">Карта России · 200 ₽<small>Сбер, Т-Банк, ВТБ, любая российская</small></button>
+    <button class="cobtn u" id="co-usd-btn" type="button">Карта другой страны · 2,44 $<small>Казахстан, Беларусь, Узбекистан, Азербайджан и другие</small></button>
+    <p class="cohint">Оплата прямо здесь, ничего скачивать и устанавливать не нужно.</p>
+  </div>
+
+  <div id="co-load" class="coload hide"><div class="spin"></div><br>Готовлю оплату…</div>
+
+  <div id="co-rub" class="hide">
+    <button class="coback" type="button" onclick="coHome()">← назад</button>
+    <div class="cobox"><div id="smgl-payment-form"></div></div>
+    <p class="cohint">Впишите номер карты, срок и три цифры с обратной стороны. Банк пришлёт код в СМС, его тоже впишите. Книжка откроется здесь же.</p>
+  </div>
+
+  <div id="co-usd" class="hide">
+    <button class="coback" type="button" onclick="coHome()">← назад</button>
+    <iframe id="cardpay" title="Оплата картой"></iframe>
+    <p class="cohint">Впишите номер карты, срок и три цифры с обратной стороны, потом код из СМС банка. После оплаты книжка откроется здесь сама через несколько секунд.</p>
+  </div>
+
+  <div id="co-check" class="coload hide"><div class="spin"></div><br><span id="co-check-t">Оплата прошла, открываю книжку…</span></div>
+
+  <div id="co-paid" class="cook hide">✅ Оплачено, спасибо! Книжка ваша.
+    <a class="readbtn" id="co-read" href="#">📖 Читать книжку</a>
+    <small>Книжка открывается прямо в телефоне, листайте вниз. Эта кнопка останется на странице книжки. Чтобы точно не потерять, скопируйте ссылку и сохраните себе.</small>
+    <button class="cplink" id="co-copy" type="button">Скопировать ссылку на книжку</button>
+  </div>
+
+  <div id="co-fail" class="coerr hide">Оплата не прошла, деньги не списаны. Проверьте номер карты и срок или попробуйте другую карту.
+    <br><button class="coback" type="button" onclick="coHome()">← попробовать ещё раз</button></div>
+  <div id="co-err" class="coerr hide">Оплата сейчас не открылась. Проверьте интернет и попробуйте ещё раз через минуту. Если опять не выйдет, напишите Тамаре в личку слово <b>КНИЖКА</b>, поможем.
+    <br><button class="coback" type="button" onclick="coHome()">← попробовать ещё раз</button></div>
+
+  <div class="coalt" id="coalt"></div>
+</div></div>
 
 <script>
 var BUY_URL = 'https://app.lava.top/products/842fa4a1-7059-49db-a565-b63f7d86ae1a';  // товар Lava.top (18.11)
@@ -231,10 +300,10 @@ if (nonRU) {
 // а переход в Chrome через intent:// TikTok молча глушит (проверено на трубке 18.11).
 // Поэтому в TikTok кнопка «Купить» никуда не уводит, а показывает инструкцию «⋯ → Открыть в браузере».
 function payUrl(cur) { return CHECKOUT + '?currency=' + cur + (FROM ? '&utm_source=kniga_' + FROM : ''); }
-if (tiktok || insta) { show('pill'); show('tt'); }
-if (insta) {
-  $('tttext').innerHTML = 'Если оплата не откроется: нажмите <span class="dots">⋯</span> вверху справа и выберите <b>«Открыть в браузере»</b>.';
-}
+// 20.11: Lava в TikTok так и не открылась (хаб на трубке: «Нет соединения»), а наша касса на странице открывается.
+// Поэтому инструкция «⋯ → Открыть в браузере» больше не показывается, промокод (он только для страницы Lava) убран с витрины.
+$('promo').className += ' hide'; $('promo2').className += ' hide';
+$('eur').className += ' hide';
 var ovShown = false;
 function openOv() { show('ov'); ovShown = true; hit('kniga-ov-tiktok'); }
 function closeOv() { $('ov').className = 'ov hide'; }
@@ -246,19 +315,154 @@ document.addEventListener('visibilitychange', function () {
   // после инструкции ушли из TikTok (скорее всего, в браузер)
   if (document.hidden && ovShown) { hit('kniga-ov-left'); ovShown = false; }
 });
-// key: главная кнопка → kniga-buy, кнопки валют в блоке «не из России» → kniga-cur-usd / -eur / -rub
-function bind(id, cur, key) {
+// ---------- Касса на странице (20.11) ----------
+// Счёт заводит сервис на alice-germany (abuzai.codes/tk/, ключ Lava там): POST new → {t, r|u}; GET st?t= → {st, read}.
+// ₽: виджет smart_glocal по public_token. $: страница cardpay во фрейме. Ссылку на читалку сервис отдаёт только
+// после того, как Lava сама скажет COMPLETED. Если JS кассы не сработает, кнопка остаётся обычной ссылкой на Lava.
+var API = 'https://abuzai.codes/tk/';
+var CO = { t: '', cur: '', timer: null, form: null, started: 0 };
+var CO_IDS = ['co-choose', 'co-load', 'co-rub', 'co-usd', 'co-check', 'co-paid', 'co-fail', 'co-err'];
+function store(k, v) { try { if (v === null) { localStorage.removeItem(k); } else { localStorage.setItem(k, v); } } catch (e) {} }
+function stored(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+function coShow(id) {
+  CO_IDS.forEach(function (x) { var e = $(x); e.className = e.className.replace(/\s*hide\b/g, '') + (x === id ? '' : ' hide'); });
+  var c = $('co'); c.scrollTop = 0;
+}
+function stopPoll() { if (CO.timer) { clearInterval(CO.timer); CO.timer = null; } }
+function startPoll(ms) { stopPoll(); CO.timer = setInterval(poll, ms); }
+function openCo(cur) {
+  $('co').className = 'co'; document.body.style.overflow = 'hidden';
+  hit('kniga-co' + src); if (FROM) { hit('kniga-buy-from-' + FROM); }
+  loadWidget();
+  var read = stored('kniga-read');
+  if (read) { gotBook(read, true); return; }
+  if (cur) { startPay(cur); } else { coShow('co-choose'); }
+}
+// закрыли окно — опрос оплаты не останавливаем: если человек уже заплатил, книжка всё равно откроется
+function closeCo() { $('co').className = 'co hide'; document.body.style.overflow = ''; }
+function coHome() { stopPoll(); CO.t = ''; coShow('co-choose'); }
+$('cox').onclick = closeCo;
+$('co-rub-btn').onclick = function () { startPay('RUB'); };
+$('co-usd-btn').onclick = function () { startPay('USD'); };
+$('coalt').innerHTML = (tiktok || insta)
+  ? 'Не получается? Напишите Тамаре в личку слово <b>КНИЖКА</b>, поможем.'
+  : 'Другие способы: СБП, PayPal, промокод — <a href="' + payUrl(MAIN) + '" id="co-lava">на странице Lava</a>';
+if ($('co-lava')) { $('co-lava').onclick = function () { hit('kniga-co-lava' + src); }; }
+
+function api(path, opts) {
+  return fetch(API + path, opts).then(function (r) {
+    return r.json().then(function (d) { if (!r.ok) { var e = new Error(d.err || ('http ' + r.status)); e.code = r.status; throw e; } return d; });
+  });
+}
+function startPay(cur, retry) {
+  coShow('co-load'); stopPoll();
+  if (!retry) { hit('kniga-co-' + cur.toLowerCase() + src); }
+  api('new', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify({ cur: cur, from: FROM || (tiktok ? 'tt' : (insta ? 'ig' : '')) }) })
+  .then(function (d) {
+    CO.t = d.t; CO.cur = cur; CO.started = Date.now();
+    store('kniga-order', JSON.stringify({ t: d.t, cur: cur, ts: Date.now() }));
+    if (cur === 'RUB') { payRub(d.r); } else { payUsd(d.u); }
+  })['catch'](function (e) {
+    if (!retry && e.code !== 429) { setTimeout(function () { startPay(cur, true); }, 1500); return; }
+    hit('kniga-co-err' + src); coShow('co-err');
+  });
+}
+function payRub(token) {
+  coShow('co-rub');
+  $('smgl-payment-form').innerHTML = '';
+  function render() {
+    try {
+      CO.form = new window.SmglPaymentForm(token, {
+        isCvcMasked: true,
+        texts: { paymentForm: { buttonPayLabel: 'Оплатить 200 ₽', cardNumberLabel: 'Номер карты', expireDateLabel: 'Срок',
+                                cardholderLabel: 'Имя на карте', cardholderPlaceholder: 'IVAN IVANOV', expireDateNote: 'ММ/ГГ' } }
+      });
+      CO.form.onPaymentStart = function () { hit('kniga-rub-start' + src); };
+      CO.form.onPaymentSuccess = function () { hit('kniga-rub-ok' + src); checking(); };
+      CO.form.onPaymentFail = function () { hit('kniga-rub-fail' + src); stopPoll(); coShow('co-fail'); };
+      CO.form.render();
+      startPoll(6000);   // на случай, если виджет не позовёт onPaymentSuccess (3-D Secure и т.п.)
+    } catch (e) { hit('kniga-rub-err' + src); coShow('co-err'); }
+  }
+  loadWidget(function (ok) { if (ok) { render(); } else { hit('kniga-rub-err' + src); coShow('co-err'); } });
+}
+// Виджет карты грузим сразу при открытии окна оплаты, параллельно со счётом (вместе было ~12 с, по очереди)
+var W = { state: 0, q: [] };
+function loadWidget(cb) {
+  if (W.state === 2) { if (cb) { cb(true); } return; }
+  if (cb) { W.q.push(cb); }
+  if (W.state === 1) { return; }
+  W.state = 1;
+  function flush(ok) { var q = W.q; W.q = []; q.forEach(function (f) { f(ok); }); }
+  var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://widget.smart-glocal.com/payment-form.css';
+  document.head.appendChild(l);
+  var s = document.createElement('script'); s.src = 'https://widget.smart-glocal.com/payment-form.js';
+  s.onload = function () { W.state = 2; flush(true); };
+  s.onerror = function () { W.state = 0; flush(false); };
+  document.body.appendChild(s);
+}
+function payUsd(uuid) {
+  coShow('co-usd');
+  $('cardpay').src = 'https://cardpay.com/MI/payment.html?uuid=' + encodeURIComponent(uuid);
+  startPoll(4000);
+}
+function checking() {
+  coShow('co-check'); startPoll(2000);
+  setTimeout(function () {
+    if (CO.t) { $('co-check-t').innerHTML = 'Банк ещё подтверждает оплату. Книжка откроется здесь сама, страницу не закрывайте.<br><small>Если за 5 минут не открылась, напишите Тамаре в личку слово КНИЖКА.</small>'; startPoll(5000); }
+  }, 60000);
+}
+function poll() {
+  if (!CO.t) { stopPoll(); return; }
+  if (Date.now() - CO.started > 40 * 60000) { stopPoll(); return; }
+  api('st?t=' + encodeURIComponent(CO.t), { cache: 'no-store' }).then(function (d) {
+    if (d.st === 'paid' && d.read) { gotBook(d.read); }
+  })['catch'](function () {});
+}
+function gotBook(read, again) {
+  stopPoll(); CO.t = '';
+  store('kniga-read', read); store('kniga-order', null);
+  $('co').className = 'co'; document.body.style.overflow = 'hidden';
+  $('co-read').href = read; coShow('co-paid');
+  $('mybook').href = read; show('mybook');
+  if (!again) { hit('kniga-paid' + src); }
+}
+$('co-read').onclick = function () { hit('kniga-read-open' + src); };
+$('mybook').onclick = function () { hit('kniga-read-open' + src); };
+$('co-copy').onclick = function () {
+  var ok = copyText($('co-read').href);
+  this.textContent = ok ? 'Скопировано ✓ сохраните в заметки или отправьте себе' : $('co-read').href;
+};
+
+// Уже купили на этом телефоне — кнопка «Ваша книжка» сверху. Был неоплаченный заказ (ушли на 3-D Secure и вернулись) — спросить.
+(function () {
+  var read = stored('kniga-read');
+  if (read) { $('mybook').href = read; show('mybook'); return; }
+  var o = null; try { o = JSON.parse(stored('kniga-order') || 'null'); } catch (e) {}
+  if (o && o.t && Date.now() - o.ts < 3 * 86400000) {
+    api('st?t=' + encodeURIComponent(o.t), { cache: 'no-store' }).then(function (d) {
+      if (d.st === 'paid' && d.read) { gotBook(d.read); }
+    })['catch'](function () {});
+  }
+})();
+
+// key: главная кнопка → kniga-buy, кнопки валют в блоке «не из России» → kniga-cur-usd / -rub
+// Главная кнопка открывает выбор карты (₽ или $), кнопки в блоке «не из России» — сразу нужную форму.
+function bind(id, cur, key, direct) {
   var a = $(id);
-  if (BUY_URL) { a.href = payUrl(cur); }
+  a.href = payUrl(cur);   // запасной путь, если скрипт кассы не сработает
   a.onclick = function () {
     hit(key + src);
-    if (!BUY_URL) { alert('Книжка появится в продаже совсем скоро. Напишите Тамаре в личку слово КНИЖКА — пришлём ссылку.'); return false; }
-    if (tiktok) { openOv(); return false; }
-    if (FROM) { hit('kniga-buy-from-' + FROM); }
+    if (!window.fetch) { return true; }
+    openCo(direct ? cur : '');
+    return false;
   };
 }
+// вне России первой ставим карту другой страны
+if (nonRU) { $('co-choose').insertBefore($('co-usd-btn'), $('co-rub-btn')); }
 bind('buy1', MAIN, 'kniga-buy'); bind('buy2', MAIN, 'kniga-buy');
-bind('usd', 'USD', 'kniga-cur-usd'); bind('eur', 'EUR', 'kniga-cur-eur'); bind('rub', 'RUB', 'kniga-cur-rub');
+bind('usd', 'USD', 'kniga-cur-usd', true); bind('rub', 'RUB', 'kniga-cur-rub', true);
 // промокод: копирование работает и в старом встроенном браузере TikTok (execCommand)
 function copyText(txt) {
   var t = document.createElement('textarea');

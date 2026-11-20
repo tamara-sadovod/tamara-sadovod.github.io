@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Оплата книжки «Несушки зимой»</title>
+<link rel="stylesheet" href="https://widget.smart-glocal.com/payment-form.css">
+<style>
+/* Касса для встроенных браузеров TikTok и Instagram: TikTok пускает наш домен, а lava.top блокирует.
+   Старый WebView (Chrome 78) бывает: без gap, без ?. и стрелочных функций. */
+body { margin: 0; background: #fbf7ef; color: #2b2b2b; font: 18px/1.45 -apple-system, Roboto, Arial, sans-serif; }
+.wrap { max-width: 520px; margin: 0 auto; padding: 18px 16px 40px; }
+h1 { font-size: 24px; margin: 4px 0 6px; }
+.sub { color: #6b6152; margin: 0 0 18px; }
+.btn { display: block; width: 100%; box-sizing: border-box; margin: 0 0 12px; padding: 18px 16px; border: 0; border-radius: 14px;
+       font-size: 20px; font-weight: 700; text-align: left; cursor: pointer; }
+.btn small { display: block; font-weight: 400; font-size: 15px; margin-top: 4px; }
+.rub { background: #2e7d32; color: #fff; }
+.usd { background: #fff; color: #2b2b2b; border: 2px solid #2e7d32; }
+.hide { display: none; }
+.box { background: #fff; border-radius: 14px; padding: 16px; margin-top: 8px; }
+.hint { color: #6b6152; font-size: 15px; margin: 10px 0 0; }
+.back { background: none; border: 0; color: #2e7d32; font-size: 17px; padding: 8px 0; cursor: pointer; }
+#cardpay { width: 100%; height: 760px; border: 0; }
+.ok { background: #e8f5e9; border-radius: 14px; padding: 18px; font-size: 20px; }
+.err { background: #fdecea; border-radius: 14px; padding: 16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📕 Книжка «Несушки зимой»</h1>
+  <p class="sub">62 страницы: свет на всю зиму, корм граммами, курятник, линька</p>
+
+  <div id="choose">
+    <button class="btn rub" onclick="payRub()">Карта России · 200 ₽<small>Сбер, Т-Банк, ВТБ, любая российская</small></button>
+    <button class="btn usd" onclick="payUsd()">Карта другой страны · 2,44 $<small>Казахстан, Беларусь, Узбекистан, Азербайджан и другие</small></button>
+    <p class="hint">Оплата прямо здесь, ничего скачивать и устанавливать не нужно.</p>
+  </div>
+
+  <div id="rub" class="hide">
+    <button class="back" onclick="home()">← назад</button>
+    <div class="box">
+      <div id="smgl-payment-form"></div>
+      <p class="hint">Впишите номер карты, срок и три цифры с обратной стороны. Банк пришлёт код в СМС, его тоже впишите.</p>
+    </div>
+  </div>
+
+  <div id="usd" class="hide">
+    <button class="back" onclick="home()">← назад</button>
+    <iframe id="cardpay" title="Оплата картой"></iframe>
+    <p class="hint">Впишите номер карты, срок и три цифры с обратной стороны. Банк пришлёт код в СМС, его тоже впишите.</p>
+  </div>
+
+  <div id="paid" class="hide ok">✅ Оплачено, спасибо! Книжка ваша.<br>Тамара пришлёт её вам в личку, где вы с ней переписывались, через пару минут.</div>
+  <div id="fail" class="hide err">Оплата не прошла. Деньги не списаны. Попробуйте ещё раз или напишите Тамаре в личку, что не получилось.
+    <br><button class="back" onclick="home()">← попробовать ещё раз</button></div>
+  <div id="nolink" class="hide err">Ссылка неполная. Напишите Тамаре в личку слово КНИЖКА, она пришлёт новую.</div>
+</div>
+
+<script>
+// Личная ссылка от kassa.py: #r=<public_token smart_glocal>&u=<uuid cardpay>&k=<номер счёта>
+var P = {};
+location.hash.replace(/^#/, '').split('&').forEach(function (kv) {
+  var i = kv.indexOf('=');
+  if (i > 0) { P[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1)); }
+});
+
+function ping(url) { try { var im = new Image(); im.src = url + (url.indexOf('?') < 0 ? '?' : '&') + 't=' + Date.now(); } catch (e) {} }
+function hit(key) {
+  if (location.protocol === 'file:') { return; }
+  ping('https://hits.sh/tamara-sadovod.github.io/' + key + '.svg');
+}
+var ua = navigator.userAgent || '';
+var src = /musical_ly|BytedanceWebview|TikTok|trill|ByteLocale/i.test(ua) ? '-tiktok' : (/Instagram/i.test(ua) ? '-insta' : '');
+
+function show(id) {
+  ['choose', 'rub', 'usd', 'paid', 'fail', 'nolink'].forEach(function (x) {
+    document.getElementById(x).className = (x === id ? '' : 'hide') + (x === 'paid' ? ' ok' : (x === 'fail' || x === 'nolink' ? ' err' : ''));
+  });
+  window.scrollTo(0, 0);
+}
+function home() { show('choose'); }
+
+var form = null;
+function payRub() {
+  if (!P.r) { show('nolink'); return; }
+  hit('kassa-rub' + src);
+  show('rub');
+  if (form) { return; }
+  var s = document.createElement('script');
+  s.src = 'https://widget.smart-glocal.com/payment-form.js';
+  s.onload = function () {
+    try {
+      form = new window.SmglPaymentForm(P.r, {
+        isCvcMasked: true,
+        texts: { paymentForm: { buttonPayLabel: 'Оплатить 200 ₽', cardNumberLabel: 'Номер карты', expireDateLabel: 'Срок',
+                                cardholderLabel: 'Имя на карте', cardholderPlaceholder: 'IVAN IVANOV', expireDateNote: 'ММ/ГГ' } }
+      });
+      form.onPaymentStart = function () { hit('kassa-rub-start' + src); };
+      form.onPaymentSuccess = function () { hit('kassa-rub-ok' + src); show('paid'); };
+      form.onPaymentFail = function () { hit('kassa-rub-fail' + src); show('fail'); form = null; };
+      form.render();
+    } catch (e) { hit('kassa-rub-err' + src); show('fail'); }
+  };
+  s.onerror = function () { hit('kassa-rub-err' + src); show('fail'); };
+  document.body.appendChild(s);
+}
+
+function payUsd() {
+  if (!P.u) { show('nolink'); return; }
+  hit('kassa-usd' + src);
+  show('usd');
+  var f = document.getElementById('cardpay');
+  if (!f.src) { f.src = 'https://cardpay.com/MI/payment.html?uuid=' + encodeURIComponent(P.u); }
+}
+
+if (!P.r && !P.u) { show('nolink'); } else { hit('kassa-view' + src); }
+</script>
+</body>
+</html>

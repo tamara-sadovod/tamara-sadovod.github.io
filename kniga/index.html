@@ -103,6 +103,9 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
 .cobox{background:#fff;border-radius:14px;padding:14px;margin-top:6px}
 .coback{border:0;background:none;color:var(--green);font-size:17px;padding:6px 0 10px;font-family:inherit}
 #cardpay{width:100%;height:760px;border:0;background:#fff;border-radius:12px}
+#bank3ds{display:block;width:100%;height:640px;border:0;background:#fff;border-radius:12px;margin-top:6px}
+.b3t{color:var(--ink);font-size:17px;margin:4px 0 6px}
+.b3alt{border:0;background:none;color:var(--green);font-size:15px;padding:10px 0;font-family:inherit;text-decoration:underline}
 .coload{text-align:center;padding:50px 0;font-size:19px;color:var(--soft)}
 .spin{display:inline-block;width:34px;height:34px;border:4px solid var(--line);border-top-color:var(--green);border-radius:50%;animation:sp 1s linear infinite;margin-bottom:12px}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -213,8 +216,13 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
 
   <div id="co-rub" class="hide">
     <button class="coback" type="button" onclick="coHome()">← назад</button>
-    <div class="cobox"><div id="smgl-payment-form"></div></div>
-    <p class="cohint">Впишите номер карты, срок и три цифры с обратной стороны. Банк пришлёт код в СМС, его тоже впишите. Книжка откроется здесь же.</p>
+    <div class="cobox" id="smgl-box"><div id="smgl-payment-form"></div></div>
+    <p class="cohint" id="smgl-hint">Впишите номер карты, срок и три цифры с обратной стороны. Банк пришлёт код в СМС, его тоже впишите. Книжка откроется здесь же.</p>
+    <div id="b3" class="hide">
+      <p class="b3t">Подтвердите оплату в окне банка. Если банк прислал код в СМС, впишите его. Книжка откроется здесь же.</p>
+      <button class="b3alt" id="b3alt" type="button">Окно банка ниже пустое? Нажмите сюда</button>
+      <iframe name="smgl3ds" id="bank3ds" title="Подтверждение оплаты банком"></iframe>
+    </div>
   </div>
 
   <div id="co-usd" class="hide">
@@ -320,7 +328,29 @@ document.addEventListener('visibilitychange', function () {
 // ₽: виджет smart_glocal по public_token. $: страница cardpay во фрейме. Ссылку на читалку сервис отдаёт только
 // после того, как Lava сама скажет COMPLETED. Если JS кассы не сработает, кнопка остаётся обычной ссылкой на Lava.
 var API = 'https://abuzai.codes/tk/';
-var CO = { t: '', cur: '', timer: null, form: null, started: 0 };
+var CO = { t: '', cur: '', timer: null, form: null, started: 0, b3: false, b3form: null, noRedir: 0 };
+// 21.11, живая оплата хаба: после оплаты виджет уводил всю вкладку на app.lava.top «Оплата прошла успешно»,
+// а наша «Читать книжку» показывалась, только если нажать «назад». Адреса возврата Lava виджет берёт из ответа
+// /widget/v1/init (extra_data.success_return_url / failure_return_url) и уходит по ним через window.top.
+// Убираем их из ответа: виджет зовёт onPaymentSuccess и остаётся на странице, книжку выдаёт наш опрос.
+(function () {
+  if (!window.fetch || !window.Response) { return; }
+  var orig = window.fetch;
+  window.fetch = function (u) {
+    var p = orig.apply(window, arguments);
+    var url = typeof u === 'string' ? u : ((u && u.url) || '');
+    if (url.indexOf('smart-glocal.com/widget/v1/') < 0 || !/\/(re)?init\b/.test(url)) { return p; }
+    return p.then(function (r) {
+      return r.clone().json().then(function (d) {
+        var e = d && d.extra_data;
+        if (!e || !(e.success_return_url || e.failure_return_url)) { return r; }
+        delete e.success_return_url; delete e.failure_return_url;
+        CO.noRedir++;
+        return new Response(JSON.stringify(d), { status: r.status, statusText: r.statusText, headers: r.headers });
+      }, function () { return r; });
+    });
+  };
+})();
 var CO_IDS = ['co-choose', 'co-load', 'co-rub', 'co-usd', 'co-check', 'co-paid', 'co-fail', 'co-err'];
 function store(k, v) { try { if (v === null) { localStorage.removeItem(k); } else { localStorage.setItem(k, v); } } catch (e) {} }
 function stored(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
@@ -340,7 +370,42 @@ function openCo(cur) {
 }
 // закрыли окно — опрос оплаты не останавливаем: если человек уже заплатил, книжка всё равно откроется
 function closeCo() { $('co').className = 'co hide'; document.body.style.overflow = ''; }
-function coHome() { stopPoll(); CO.t = ''; coShow('co-choose'); }
+function coHome() { stopPoll(); CO.t = ''; reset3ds(); coShow('co-choose'); }
+// Код банка (3-D Secure). Виджет по умолчанию отправляет форму банка в window.top, то есть уводит всю страницу,
+// и после кода банк возвращает человека уже на app.lava.top (так было в живой оплате 21.11). Поэтому форма банка
+// идёт в наш фрейм smgl3ds прямо в окне оплаты, а когда Lava скажет COMPLETED, опрос покажет «Читать книжку».
+// Страница успеха Lava во фрейме всю вкладку не уводит (проверено 21.11).
+function show3ds() {
+  if (CO.b3) { return; }
+  CO.b3 = true;
+  $('smgl-box').className = 'cobox hide'; $('smgl-hint').className = 'cohint hide';
+  show('b3'); $('co').scrollTop = 0;
+  hit('kniga-rub-3ds' + src);
+  if (CO.t) { startPoll(3000); }
+}
+function reset3ds() {
+  CO.b3 = false; CO.b3form = null;
+  $('b3').className = 'hide'; $('smgl-box').className = 'cobox'; $('smgl-hint').className = 'cohint';
+  try { $('bank3ds').contentWindow.location.replace('about:blank'); } catch (e) { $('bank3ds').src = 'about:blank'; }
+}
+$('smgl-payment-form').addEventListener('submit', function (e) {
+  var f = e.target;
+  if (f && f.target === 'smgl3ds') { CO.b3form = f; show3ds(); }
+}, true);
+$('bank3ds').onload = function () {
+  var blank = false;
+  try { blank = this.contentWindow.location.href === 'about:blank'; } catch (e) { blank = false; }
+  if (!blank && CO.cur === 'RUB' && CO.t) { show3ds(); }
+};
+// Запасной выход: если банк не открылся во фрейме, отправить его форму на всю вкладку, как делал виджет.
+// После кода человек окажется на Lava, а при возврате на /kniga/ книжку покажет проверка неоплаченного заказа.
+$('b3alt').onclick = function () {
+  hit('kniga-rub-3ds-top' + src);
+  var f = (CO.b3form && document.body.contains(CO.b3form)) ? CO.b3form : null;
+  var fs = $('smgl-payment-form').getElementsByTagName('form'), i;
+  for (i = 0; !f && i < fs.length; i++) { if (fs[i].target === 'smgl3ds') { f = fs[i]; } }
+  if (f) { f.target = '_top'; f.submit(); }
+};
 $('cox').onclick = closeCo;
 $('co-rub-btn').onclick = function () { startPay('RUB'); };
 $('co-usd-btn').onclick = function () { startPay('USD'); };
@@ -369,12 +434,13 @@ function startPay(cur, retry) {
   });
 }
 function payRub(token) {
-  coShow('co-rub');
+  reset3ds(); coShow('co-rub');
   $('smgl-payment-form').innerHTML = '';
   function render() {
     try {
       CO.form = new window.SmglPaymentForm(token, {
         isCvcMasked: true,
+        customerInteractionRedirect: { target: 'smgl3ds' },
         texts: { paymentForm: { buttonPayLabel: 'Оплатить 200 ₽', cardNumberLabel: 'Номер карты', expireDateLabel: 'Срок',
                                 cardholderLabel: 'Имя на карте', cardholderPlaceholder: 'IVAN IVANOV', expireDateNote: 'ММ/ГГ' } }
       });
@@ -418,10 +484,12 @@ function poll() {
   if (Date.now() - CO.started > 40 * 60000) { stopPoll(); return; }
   api('st?t=' + encodeURIComponent(CO.t), { cache: 'no-store' }).then(function (d) {
     if (d.st === 'paid' && d.read) { gotBook(d.read); }
+    // отказ банка после кода: окно банка убрать, предложить другую карту (только ₽, у cardpay свой повтор)
+    else if (d.st === 'failed' && CO.b3) { hit('kniga-rub-3ds-fail' + src); stopPoll(); reset3ds(); coShow('co-fail'); }
   })['catch'](function () {});
 }
 function gotBook(read, again) {
-  stopPoll(); CO.t = '';
+  stopPoll(); CO.t = ''; reset3ds();
   store('kniga-read', read); store('kniga-order', null);
   $('co').className = 'co'; document.body.style.overflow = 'hidden';
   $('co-read').href = read; coShow('co-paid');

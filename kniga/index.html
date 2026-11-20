@@ -241,6 +241,10 @@ h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;margin:30px 0 12px
 
   <div id="co-fail" class="coerr hide">Оплата не прошла, деньги не списаны. Проверьте номер карты и срок или попробуйте другую карту.
     <br><button class="coback" type="button" onclick="coHome()">← попробовать ещё раз</button></div>
+  <div id="co-old" class="coerr hide">На этом телефоне форма российской карты не открывается: в нём старая версия встроенного браузера.
+    Напишите Тамаре в личку слово <b>КНИЖКА</b>, поможем оплатить.
+    <br><small>Иногда помогает обновить в Google Play приложение «Android System WebView».</small>
+    <br><button class="coback" type="button" onclick="coHome()">← назад</button></div>
   <div id="co-err" class="coerr hide">Оплата сейчас не открылась. Проверьте интернет и попробуйте ещё раз через минуту. Если опять не выйдет, напишите Тамаре в личку слово <b>КНИЖКА</b>, поможем.
     <br><button class="coback" type="button" onclick="coHome()">← попробовать ещё раз</button></div>
 
@@ -351,7 +355,13 @@ var CO = { t: '', cur: '', timer: null, form: null, started: 0, b3: false, b3for
     });
   };
 })();
-var CO_IDS = ['co-choose', 'co-load', 'co-rub', 'co-usd', 'co-check', 'co-paid', 'co-fail', 'co-err'];
+var CO_IDS = ['co-choose', 'co-load', 'co-rub', 'co-usd', 'co-check', 'co-paid', 'co-fail', 'co-old', 'co-err'];
+// 21.11: виджет smart_glocal (payment-form.js, сборка 19.11) написан с ?. и ??, а их понимает только Chrome 80+.
+// В TikTok бывает системный WebView Chrome 78 (у Кости), там скрипт не разбирается и формы ₽ нет вовсе.
+// Такому телефону счёт ₽ не заводим, а сразу говорим, что делать. Карта другой страны (cardpay) там работает.
+var MODERN = (function () { try { return !!new Function('var a = {b: 1}; return a?.b ?? 0;'); } catch (e) { return false; } })();
+// ?fresh=1 — для проверок на телефоне, где книжку уже купили: окно оплаты не перескакивает на «Ваша книжка»
+var FRESH = /[?&]fresh=1/.test(location.search);
 function store(k, v) { try { if (v === null) { localStorage.removeItem(k); } else { localStorage.setItem(k, v); } } catch (e) {} }
 function stored(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
 function coShow(id) {
@@ -363,9 +373,9 @@ function startPoll(ms) { stopPoll(); CO.timer = setInterval(poll, ms); }
 function openCo(cur) {
   $('co').className = 'co'; document.body.style.overflow = 'hidden';
   hit('kniga-co' + src); if (FROM) { hit('kniga-buy-from-' + FROM); }
-  loadWidget();
+  if (MODERN) { loadWidget(); }
   var read = stored('kniga-read');
-  if (read) { gotBook(read, true); return; }
+  if (read && !FRESH) { gotBook(read, true); return; }
   if (cur) { startPay(cur); } else { coShow('co-choose'); }
 }
 // закрыли окно — опрос оплаты не останавливаем: если человек уже заплатил, книжка всё равно откроется
@@ -388,7 +398,7 @@ function reset3ds() {
   $('b3').className = 'hide'; $('smgl-box').className = 'cobox'; $('smgl-hint').className = 'cohint';
   try { $('bank3ds').contentWindow.location.replace('about:blank'); } catch (e) { $('bank3ds').src = 'about:blank'; }
 }
-$('smgl-payment-form').addEventListener('submit', function (e) {
+$('smgl-box').addEventListener('submit', function (e) {
   var f = e.target;
   if (f && f.target === 'smgl3ds') { CO.b3form = f; show3ds(); }
 }, true);
@@ -420,8 +430,10 @@ function api(path, opts) {
   });
 }
 function startPay(cur, retry) {
-  coShow('co-load'); stopPoll();
+  stopPoll();
   if (!retry) { hit('kniga-co-' + cur.toLowerCase() + src); }
+  if (cur === 'RUB' && !MODERN) { hit('kniga-rub-old' + src); coShow('co-old'); return; }
+  coShow('co-load');
   api('new', { method: 'POST', headers: { 'Content-Type': 'application/json' },
                body: JSON.stringify({ cur: cur, from: FROM || (tiktok ? 'tt' : (insta ? 'ig' : '')) }) })
   .then(function (d) {
@@ -435,11 +447,16 @@ function startPay(cur, retry) {
 }
 function payRub(token) {
   reset3ds(); coShow('co-rub');
-  $('smgl-payment-form').innerHTML = '';
+  // Каждый раз новый контейнер: виджет (Preact) помнит прошлое дерево на старом узле, и после innerHTML=''
+  // второй выбор «Карта России» рисовал пустоту (хаб, Chrome 101, 21.11).
+  var nf = document.createElement('div');
+  nf.id = 'smgl-payment-form';
+  $('smgl-box').replaceChild(nf, $('smgl-payment-form'));
   function render() {
+    if (!window.SmglPaymentForm) { hit('kniga-rub-old' + src); coShow('co-old'); return; }
     try {
       CO.form = new window.SmglPaymentForm(token, {
-        isCvcMasked: true,
+        isCvcMasked: true,   // контейнер виджет берёт сам по id smgl-payment-form, это уже новый nf
         customerInteractionRedirect: { target: 'smgl3ds' },
         texts: { paymentForm: { buttonPayLabel: 'Оплатить 200 ₽', cardNumberLabel: 'Номер карты', expireDateLabel: 'Срок',
                                 cardholderLabel: 'Имя на карте', cardholderPlaceholder: 'IVAN IVANOV', expireDateNote: 'ММ/ГГ' } }

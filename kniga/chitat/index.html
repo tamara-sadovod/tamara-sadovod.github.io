@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Несушки зимой — книжка</title>
+<style>
+/* Читалка для встроенных браузеров TikTok/Instagram (старый WebView, Chrome 78): ES5, без gap, без inset.
+   Страницы зашифрованы AES-GCM, ключ только в ссылке покупателя после # (на сервер не уходит). */
+:root{--bg:#ece5d6;--ink:#2a2a22;--soft:#5c5a50;--green:#2d5530;--rust:#b04a20;--card:#fffdf7;--line:#e2d9c6}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,Roboto,"Segoe UI",Arial,sans-serif}
+.bar{position:fixed;top:0;left:0;right:0;z-index:20;background:var(--green);color:#fff;height:52px}
+.bar .in{max-width:620px;margin:0 auto;padding:0 10px 0 14px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.bar b{font-family:Georgia,"Times New Roman",serif;font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar button{border:0;background:#fff;color:var(--green);border-radius:12px;padding:9px 14px;font-size:18px;font-weight:700;margin-left:10px}
+.book{max-width:620px;margin:0 auto;padding:62px 8px 40px}
+.pg{position:relative;width:100%;background:#fff;margin:0 0 10px;border-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.18);overflow:hidden}
+.pg img{position:absolute;top:0;left:0;width:100%;height:100%;display:block}
+.pg .wait{position:absolute;top:40%;left:0;right:0;text-align:center;color:#b9b2a2;font-size:16px}
+.pg a{position:absolute;display:block}
+.msg{max-width:520px;margin:90px auto 0;padding:0 16px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px;font-size:19px;line-height:1.45}
+.box h1{font-family:Georgia,"Times New Roman",serif;font-size:24px;color:var(--green);margin:0 0 8px}
+.cont{position:fixed;left:0;right:0;bottom:14px;z-index:15;text-align:center}
+.cont button{border:0;background:var(--rust);color:#fff;border-radius:16px;padding:14px 18px;font-size:19px;font-weight:700;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+.cont .x{background:#fff;color:var(--soft);margin-left:8px;padding:14px 16px}
+.ov{position:fixed;top:0;left:0;right:0;bottom:0;z-index:30;background:rgba(20,20,16,.6);overflow-y:auto}
+.menu{max-width:520px;margin:60px auto 30px;background:var(--card);border-radius:18px;padding:12px 12px 14px}
+.menu h2{font-family:Georgia,"Times New Roman",serif;font-size:22px;color:var(--green);margin:4px 6px 10px}
+.menu button{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:transparent;
+  padding:14px 8px;font-size:19px;color:var(--ink)}
+.menu button span{float:right;color:var(--soft);font-size:16px;margin-left:8px}
+.menu .close{border:0;background:var(--green);color:#fff;border-radius:14px;text-align:center;font-weight:700;margin-top:12px}
+.menu .pdf{color:var(--green);font-weight:700}
+.menu .hint{font-size:15px;color:var(--soft);margin:10px 8px 0;line-height:1.4}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="bar"><div class="in"><b>📕 Несушки зимой</b><button id="mbtn" class="hide" onclick="openMenu()">☰ Главы</button></div></div>
+
+<div id="load" class="msg"><div class="box">Открываю книжку…</div></div>
+<div id="bad" class="msg hide"><div class="box"><h1>Ссылка неполная</h1>Похоже, ссылка скопировалась не вся. Напишите Тамаре в личку слово <b>КНИЖКА</b>, она пришлёт ссылку ещё раз.</div></div>
+<div id="old" class="msg hide"><div class="box"><h1>Этот браузер не открывает книжку</h1>Нажмите три точки <b>⋯</b> вверху справа и выберите «Открыть в Хроме» (или «Открыть в браузере»). Если не получается, напишите Тамаре в личку, она поможет.</div></div>
+
+<div id="book" class="book"></div>
+
+<div id="cont" class="cont hide"><button onclick="goSaved()" id="contb">Продолжить</button><button class="x" onclick="hideCont()">✕</button></div>
+
+<div id="ov" class="ov hide" onclick="if(event.target===this)closeMenu()"><div class="menu">
+  <h2>Главы</h2>
+  <div id="mlist"></div>
+  <button id="pdfb" class="pdf hide" onclick="getPdf()">⬇ Скачать книжку файлом (PDF)</button>
+  <p id="pdfh" class="hint hide"></p>
+  <button class="close" onclick="closeMenu()">Читать дальше</button>
+</div></div>
+
+<script>
+var META = {"n": 62, "ratio": 178.8796, "links": {"1": [[7.1, 14.02, 85.84, 5.55, 2], [7.1, 19.57, 85.84, 5.42, 4], [7.1, 24.99, 85.84, 5.55, 9], [7.1, 30.55, 85.84, 5.55, 16], [7.1, 36.1, 85.84, 5.55, 25], [7.1, 41.66, 85.84, 5.55, 28], [7.1, 47.21, 85.84, 5.42, 34], [7.1, 52.63, 85.84, 5.55, 37], [7.1, 58.19, 85.84, 5.55, 44], [7.1, 63.74, 85.84, 5.55, 50], [7.1, 69.3, 85.84, 5.55, 52], [7.1, 74.85, 85.84, 5.42, 56], [7.1, 80.27, 85.84, 5.55, 59]]}, "menu": [["Как пользоваться книжкой", 2], ["1. Почему не несутся", 4], ["2. Свет", 9], ["3. Корм", 16], ["4. Вода", 25], ["5. Курятник", 28], ["6. Линька", 34], ["7. Зимние беды", 37], ["8. Породы, яйца и деньги", 44], ["9. Календарь", 50], ["10. Вопросы и ответы", 52], ["Листы для печати", 56], ["Источники и о книжке", 59]]};
+var ua = navigator.userAgent || '';
+var src = /musical_ly|BytedanceWebview|TikTok|trill|ByteLocale/i.test(ua) ? '-tiktok' : (/Instagram|FBAN|FBAV/i.test(ua) ? '-insta' : '');
+var inApp = src !== '';
+
+function ping(url) { try { var im = new Image(); im.src = url + '?t=' + Date.now(); } catch (e) {} }
+var hitOnce = {};
+function hit(key) {
+  if (location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1') { return; }
+  if (hitOnce[key]) { return; }
+  hitOnce[key] = 1;
+  ping('https://hits.sh/tamara-sadovod.github.io/' + key + src + '.svg');
+}
+function $(id) { return document.getElementById(id); }
+function show(id, on) { $(id).className = $(id).className.replace(/\s*hide/g, '') + (on ? '' : ' hide'); }
+
+var P = {};
+location.hash.replace(/^#/, '').split('&').forEach(function (kv) {
+  var i = kv.indexOf('=');
+  if (i > 0) { P[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1)); }
+});
+
+function unb64u(s) {
+  s = s.replace(/-/g, '+').replace(/_/g, '/');
+  while (s.length % 4) { s += '='; }
+  var bin = atob(s), a = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) { a[i] = bin.charCodeAt(i); }
+  return a;
+}
+function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+var KEY = null, pages = [], loaded = {};
+function fetchDec(path) {
+  return fetch(path, { cache: 'force-cache' }).then(function (r) {
+    if (!r.ok) { throw new Error('http ' + r.status); }
+    return r.arrayBuffer();
+  }).then(function (buf) {
+    return crypto.subtle.decrypt({ name: 'AES-GCM', iv: new Uint8Array(buf, 0, 12) }, KEY, new Uint8Array(buf, 12));
+  });
+}
+function loadPage(i, tries) {
+  if (loaded[i]) { return; }
+  loaded[i] = 1;
+  fetchDec('s/' + pad(i + 1) + '.bin').then(function (pt) {
+    var img = document.createElement('img');
+    img.alt = 'Страница ' + (i + 1);
+    img.src = URL.createObjectURL(new Blob([pt], { type: 'image/jpeg' }));
+    pages[i].insertBefore(img, pages[i].firstChild);
+    var w = pages[i].querySelector('.wait');
+    if (w) { w.parentNode.removeChild(w); }
+  }).catch(function () {
+    loaded[i] = 0;
+    if ((tries || 0) < 3) { setTimeout(function () { loadPage(i, (tries || 0) + 1); }, 1500); }
+  });
+}
+
+function goPage(i) {
+  closeMenu();
+  hideCont();
+  var top = pages[i].getBoundingClientRect().top + window.pageYOffset - 58;
+  window.scrollTo(0, top);
+  for (var j = Math.max(0, i - 1); j < Math.min(META.n, i + 3); j++) { loadPage(j); }
+}
+
+function build() {
+  var book = $('book');
+  for (var i = 0; i < META.n; i++) {
+    var d = document.createElement('div');
+    d.className = 'pg';
+    d.style.paddingTop = META.ratio + '%';
+    d.setAttribute('data-i', i);
+    d.innerHTML = '<div class="wait">страница ' + (i + 1) + '…</div>';
+    (META.links[i] || []).forEach(function (l) {
+      var a = document.createElement('a');
+      a.href = 'javascript:void(0)';
+      a.style.left = l[0] + '%'; a.style.top = l[1] + '%'; a.style.width = l[2] + '%'; a.style.height = l[3] + '%';
+      a.onclick = function () { goPage(l[4]); return false; };
+      d.appendChild(a);
+    });
+    book.appendChild(d);
+    pages.push(d);
+  }
+  var ml = $('mlist');
+  META.menu.forEach(function (m) {
+    var b = document.createElement('button');
+    b.innerHTML = '<span>стр. ' + (m[1] + 1) + '</span>' + m[0];
+    b.onclick = function () { goPage(m[1]); };
+    ml.appendChild(b);
+  });
+  if (inApp) {
+    $('pdfh').innerHTML = 'Файлом книжка скачивается в Хроме. Здесь её можно читать, листая вниз: всё уже тут.';
+    show('pdfh', true);
+  } else {
+    show('pdfb', true);
+  }
+}
+
+var cur = 0, saved = 0;
+function watch() {
+  var io = ('IntersectionObserver' in window) ? new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (!e.isIntersecting) { return; }
+      var i = +e.target.getAttribute('data-i');
+      loadPage(i);
+      if (i + 1 < META.n) { loadPage(i + 1); }
+    });
+  }, { rootMargin: '1200px 0px' }) : null;
+  pages.forEach(function (p, i) { if (io) { io.observe(p); } else { loadPage(i); } });
+
+  var t = null;
+  window.addEventListener('scroll', function () {
+    if (t) { return; }
+    t = setTimeout(function () {
+      t = null;
+      var y = window.pageYOffset + 120;
+      for (var i = 0; i < pages.length; i++) {
+        if (pages[i].offsetTop + pages[i].offsetHeight > y) { cur = i; break; }
+      }
+      try { localStorage.setItem('kniga-nesushki-pos', String(cur)); } catch (e) {}
+      if (cur > 2) { hideCont(); }
+      if (cur >= META.n - 2) { hit('chitat-end'); }
+    }, 400);
+  });
+}
+
+function goSaved() { goPage(saved); }
+function hideCont() { show('cont', false); }
+function openMenu() { show('ov', true); hit('chitat-menu'); }
+function closeMenu() { show('ov', false); }
+
+function getPdf() {
+  var b = $('pdfb');
+  b.innerHTML = 'Готовлю файл…';
+  hit('chitat-pdf');
+  fetchDec('s/f.bin').then(function (pt) {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([pt], { type: 'application/pdf' }));
+    a.download = 'Тамара — Несушки зимой.pdf';
+    document.body.appendChild(a);
+    a.click();
+    b.innerHTML = '⬇ Файл скачан (смотрите «Загрузки»)';
+  }).catch(function () { b.innerHTML = 'Не скачалось. Читайте здесь или откройте ссылку в Хроме'; });
+}
+
+(function start() {
+  hit('chitat-view');
+  if (!P.k) { show('load', false); show('bad', true); hit('chitat-bad'); return; }
+  if (!window.crypto || !crypto.subtle || !window.fetch || !window.Promise) { show('load', false); show('old', true); hit('chitat-old'); return; }
+  var raw;
+  try { raw = unb64u(P.k); } catch (e) { show('load', false); show('bad', true); hit('chitat-bad'); return; }
+  crypto.subtle.importKey('raw', raw, { name: 'AES-GCM' }, false, ['decrypt']).then(function (k) {
+    KEY = k;
+    return fetchDec('s/01.bin');   // проверка ключа на обложке
+  }).then(function () {
+    show('load', false);
+    show('mbtn', true);
+    build();
+    watch();
+    hit('chitat-ok');
+    try { saved = +(localStorage.getItem('kniga-nesushki-pos') || 0); } catch (e) { saved = 0; }
+    if (saved > 2 && saved < META.n) {
+      $('contb').innerHTML = 'Продолжить со страницы ' + (saved + 1);
+      show('cont', true);
+    }
+  }).catch(function (e) {
+    show('load', false);
+    // OperationError/DataError = ключ не тот; остальное (Failed to fetch, http 404) = связь
+    var badKey = e && (e.name === 'OperationError' || e.name === 'DataError');
+    if (!badKey) {
+      $('bad').innerHTML = '<div class="box"><h1>Нет связи</h1>Книжка не загрузилась. Проверьте интернет и обновите страницу.</div>';
+    }
+    show('bad', true);
+    hit(badKey ? 'chitat-bad' : 'chitat-neterr');
+  });
+})();
+</script>
+</body>
+</html>
